@@ -1,9 +1,10 @@
 services:
 - type: web
-  name: line-bot-python-cocobot
+  name: line-bot-python-flask
   env: python
-  buildCommand: pip install -r requirements.txt
-  startCommand: python CocoBot.py
+  repo: https://github.com/line/line-bot-sdk-python.git
+  buildCommand: cd examples/flask-echo;pip install gunicorn -r requirements.txt
+  startCommand: cd examples/flask-echo;gunicorn app:app
   plan: free
   autoDeploy: false
   envVars:
