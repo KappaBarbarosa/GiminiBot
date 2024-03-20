@@ -16,9 +16,13 @@ line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-pro')
-chat = model.start_chat(history=[])
+chat = model.start_chat(history=[], **{'filter': False,'temperature': 0.7})
 app = Flask(__name__)
 
+safety_config = {
+        genai.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: genai.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+        genai.HarmCategory.HARM_CATEGORY_HARASSMENT: genai.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    }
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
