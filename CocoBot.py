@@ -7,7 +7,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import pathlib
 import textwrap
 import google.generativeai as genai
-
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 #line token
 channel_access_token ="IXl5v4axMyRa12vRaXxRoeQ/Pv+7qwnxZIEWAKdL2wJvFAkDtCZuLRAFBQ6qZNinBufdH1lxlQox4IYM9jHi0PGlSVqQJ9NfeFIm/Bmi0xUArKLZaYc8FGmqzReJbO683dmTxN39WenEKaya9oKigQdB04t89/1O/w1cDnyilFU="
 channel_secret = '574b98318f04d6c1d8c4ca5508d280bd'
@@ -15,14 +15,17 @@ GOOGLE_API_KEY = 'AIzaSyAY6Q1GIxBg-s5ocjPxwvjh1D0IB-nKglY'
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
-chat = model.start_chat(history=[], **{'filter': False,'temperature': 0.7})
+model = genai.GenerativeModel('gemini-pro-vision')
+safety_config = {
+        genai.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: genai.HarmBlockThreshold.BLOCK_NONE,
+        genai.HarmCategory.HARM_CATEGORY_HATE_SPEECH: genai.HarmBlockThreshold.BLOCK_NONE,
+        genai.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT : genai.HarmBlockThreshold.BLOCK_NONE,
+        genai.HarmCategory.HARM_CATEGORY_HARASSMENT: genai.HarmBlockThreshold.BLOCK_NONE,
+    }
+chat = model.start_chat(history=[],safety_settings=safety_config)
 app = Flask(__name__)
 
-safety_config = {
-        genai.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: genai.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-        genai.HarmCategory.HARM_CATEGORY_HARASSMENT: genai.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-    }
+
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -43,7 +46,10 @@ def handle_message(event):
     #echo
     msg= event.message.text
     response = chat.send_message(msg)
-    message = TextSendMessage(text=response.text)
+    try:
+        message = TextSendMessage(text=response.text)
+    except ValueError:
+        message = TextSendMessage(text=response.candidates[0].finish_reason)
     line_bot_api.reply_message(event.reply_token,message)
 
 import os
