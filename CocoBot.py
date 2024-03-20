@@ -4,13 +4,19 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
+import pathlib
+import textwrap
+import google.generativeai as genai
 
 #line token
 channel_access_token ="IXl5v4axMyRa12vRaXxRoeQ/Pv+7qwnxZIEWAKdL2wJvFAkDtCZuLRAFBQ6qZNinBufdH1lxlQox4IYM9jHi0PGlSVqQJ9NfeFIm/Bmi0xUArKLZaYc8FGmqzReJbO683dmTxN39WenEKaya9oKigQdB04t89/1O/w1cDnyilFU="
 channel_secret = '574b98318f04d6c1d8c4ca5508d280bd'
+GOOGLE_API_KEY = 'AIzaSyAY6Q1GIxBg-s5ocjPxwvjh1D0IB-nKglY'
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
-
+genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel('gemini-pro')
+chat = model.start_chat(history=[])
 app = Flask(__name__)
 
 # 監聽所有來自 /callback 的 Post Request
@@ -20,7 +26,6 @@ def callback():
     signature = request.headers['X-Line-Signature']
     # get request body as text
     body = request.get_data(as_text=True)
-    print(body)
     app.logger.info("Request body: " + body)
     # handle webhook body
     try:
@@ -33,7 +38,8 @@ def callback():
 def handle_message(event):
     #echo
     msg= event.message.text
-    message = TextSendMessage(text=msg)
+    response = chat.send_message(msg, stream=True)
+    message = TextSendMessage(text=response.text)
     line_bot_api.reply_message(event.reply_token,message)
 
 import os
