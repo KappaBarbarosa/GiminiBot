@@ -1,8 +1,7 @@
 
 
 from flask import Flask, request, abort
-from linebot import LineBotApi
-from linebot.v3 import  WebhookHandler
+from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
@@ -21,6 +20,7 @@ def callback():
     signature = request.headers['X-Line-Signature']
     # get request body as text
     body = request.get_data(as_text=True)
+    print(body)
     app.logger.info("Request body: " + body)
     # handle webhook body
     try:
