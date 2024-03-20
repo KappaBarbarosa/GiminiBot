@@ -17,12 +17,12 @@ handler = WebhookHandler(channel_secret)
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-pro-vision')
 safety_config = {
-        genai.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: genai.HarmBlockThreshold.BLOCK_NONE,
-        genai.HarmCategory.HARM_CATEGORY_HATE_SPEECH: genai.HarmBlockThreshold.BLOCK_NONE,
-        genai.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT : genai.HarmBlockThreshold.BLOCK_NONE,
-        genai.HarmCategory.HARM_CATEGORY_HARASSMENT: genai.HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT : HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
     }
-chat = model.start_chat(history=[],safety_settings=safety_config)
+chat = model.start_chat(history=[])
 app = Flask(__name__)
 
 
@@ -45,7 +45,7 @@ def callback():
 def handle_message(event):
     #echo
     msg= event.message.text
-    response = chat.send_message(msg)
+    response = chat.send_message(msg,safety_settings=safety_config)
     try:
         message = TextSendMessage(text=response.text)
     except ValueError:
