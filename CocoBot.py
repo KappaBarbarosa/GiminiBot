@@ -38,7 +38,7 @@ def callback():
 def handle_message(event):
     #echo
     msg= event.message.text
-    response = chat.send_message(msg, stream=True)
+    response = chat.send_message(msg)
     message = TextSendMessage(text=response.text)
     line_bot_api.reply_message(event.reply_token,message)
 
