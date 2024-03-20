@@ -1,7 +1,8 @@
 
 
 from flask import Flask, request, abort
-from linebot import LineBotApi, WebhookHandler
+from linebot import LineBotApi
+from linebot.v3 import  WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
