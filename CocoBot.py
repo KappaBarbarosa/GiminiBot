@@ -91,6 +91,7 @@ def FindRestaurant(event,keyword="",radius=1000):
     if Location is None:
         AskForUserLocation(event)
         WaitForLocation = {"type":"Restaurant","keyword":keyword,"radius":radius}
+        return "sucess"
     else:
         places_result = gmaps.places_nearby(Location, keyword=keyword,type='restaurant', radius=radius,language='zh-TW')['results']
     if len(places_result) >5:
@@ -147,6 +148,7 @@ def handle_location_message(event):
     location_message = event.message
     Location['lat'] = location_message.latitude
     Location['lng'] = location_message.longitude
+    sendTextMessage(event,str(Location))
     if WaitForLocation is not None:
         if(WaitForLocation['type'] == "Restaurant"):
             FindRestaurant(event,WaitForLocation['keyword'],WaitForLocation['radius'])
