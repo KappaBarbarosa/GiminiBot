@@ -3,9 +3,11 @@
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
-import pathlib
-import textwrap
+from linebot.models import (
+    TextMessage,MessageEvent,TextSendMessage, ImageMessage
+)
+from PIL import Image
+import io
 import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 #line token
@@ -15,17 +17,21 @@ GOOGLE_API_KEY = 'AIzaSyAY6Q1GIxBg-s5ocjPxwvjh1D0IB-nKglY'
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+
+
+Textmodel = genai.GenerativeModel('gemini-pro')
+ImageModel = genai.GenerativeModel('gemini-pro-vision')
 safety_config = {
         HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT : HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
     }
-chat = model.start_chat(history=[])
+chat = Textmodel.start_chat(history=[])
 app = Flask(__name__)
 
-
+hold_image = None
+last_response = 0
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -42,15 +48,40 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    #echo
+def handle_text_message(event):
     msg= event.message.text
-    response = chat.send_message(msg,safety_settings=safety_config)
+    if hold_image is not None:
+        response = ImageModel.generate_content([msg,hold_image],safety_settings=safety_config)
+        hold_image=None
+        last_response=[msg,response.text]
+    else:
+        if last_response is not None:
+            history = chat.history
+            history.extend([
+                {'role':'user',
+                'parts':[f'I send an image to you and ask {last_response[0]}']},
+                {'role':'model',
+                'parts':[last_response[1]]},
+                ])
+            chat = Textmodel.start_chat(history=message)
+            last_response = None
+        response = chat.send_message(msg,safety_settings=safety_config)
     try:
         message = TextSendMessage(text=response.text)
     except ValueError:
         message = TextSendMessage(text=response.candidates[0].finish_reason)
     line_bot_api.reply_message(event.reply_token,message)
+
+@handler.add(MessageEvent, message=ImageMessage)
+def handle_image_message(event):
+    #echo
+    message_content = line_bot_api.get_message_content(event.message.id)
+    image_data = b""
+    for chunk in message_content.iter_content():
+        image_data += chunk
+    image_file = io.BytesIO(image_data)
+    hold_image = Image.open(image_file)
+    
 
 import os
 if __name__ == "__main__":
