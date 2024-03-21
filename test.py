@@ -13,12 +13,13 @@ while(True):
     if text == "-1":
         break
 
-    message=[{'role':'user',
+    history = chat.history
+    history.extend([{'role':'user',
                 'parts':[f'I send an image to you and ask Who is in this image?']},
                 {'role':'model',
                 'parts':["Bob is in this picture"]}
-                ]
-    chat = model.start_chat(history=message)
+                ])
+    chat = model.start_chat(history=history)
     response = chat.send_message(text)
     print(response.text)
     history.append(response.candidates[0].content)

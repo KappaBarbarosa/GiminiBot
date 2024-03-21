@@ -63,7 +63,7 @@ def handle_text_message(event):
                 {'role':'model',
                 'parts':[last_response[1]]},
                 ])
-            chat = Textmodel.start_chat(history=message)
+            chat = Textmodel.start_chat(history=history)
             last_response = None
         response = chat.send_message(msg,safety_settings=safety_config)
     try:
