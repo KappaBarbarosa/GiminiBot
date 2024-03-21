@@ -150,9 +150,10 @@ def handle_location_message(event):
     Location['lat'] = location_message.latitude
     Location['lng'] = location_message.longitude
     sendTextMessage(event,str(Location))
+    sendTextMessage(event,str(Location))
     if WaitForLocation is not None:
         if(WaitForLocation['type'] == "Restaurant"):
-            FindRestaurant(event,WaitForLocation['keyword'],WaitForLocation['radius'])
+            FindRestaurant(event=event,keyword=WaitForLocation['keyword'],radius=WaitForLocation['radius'])
     
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
