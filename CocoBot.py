@@ -4,7 +4,7 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
-    TextMessage,MessageEvent,TextSendMessage, ImageMessage
+    TextMessage,MessageEvent,TextSendMessage, ImageMessage, LocationMessage
 )
 from PIL import Image
 import io
@@ -47,11 +47,23 @@ def callback():
         abort(400)
     return 'OK'
 
+def Update_Chat(last_response):
+    global chat
+    history = chat.history
+    history.extend([
+        {'role':'user',
+        'parts':[f'I send an image to you and ask {last_response[0]}']},
+        {'role':'model',
+        'parts':[last_response[1]]},
+        ])
+    chat = Textmodel.start_chat(history=history)
+
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     global hold_image
     global last_response
-    global chat
+    
     msg= event.message.text
     if hold_image is not None:
         response = ImageModel.generate_content([msg,hold_image],safety_settings=safety_config)
@@ -59,20 +71,10 @@ def handle_text_message(event):
         last_response=[msg,response.text]
     else:
         if last_response is not None:
-            history = chat.history
-            history.extend([
-                {'role':'user',
-                'parts':[f'I send an image to you and ask {last_response[0]}']},
-                {'role':'model',
-                'parts':[last_response[1]]},
-                ])
-            chat = Textmodel.start_chat(history=history)
+            Update_Chat(last_response)
             last_response = None
         response = chat.send_message(msg,safety_settings=safety_config)
-    try:
-        message = TextSendMessage(text=response.text)
-    except ValueError:
-        message = TextSendMessage(text=response.candidates[0].finish_reason)
+    message = TextSendMessage(text=response.text)
     line_bot_api.reply_message(event.reply_token,message)
 
 @handler.add(MessageEvent, message=ImageMessage)
@@ -85,6 +87,24 @@ def handle_image_message(event):
         image_data += chunk
     image_file = io.BytesIO(image_data)
     hold_image = Image.open(image_file)
+
+@handler.add(MessageEvent, message=LocationMessage)
+def handle_location_message(event):
+    location_message = event.message
+
+    # 取得位置訊息的各個部分
+    title = location_message.title
+    address = location_message.address
+    latitude = location_message.latitude
+    longitude = location_message.longitude
+
+    # 建立一個回覆訊息
+    reply_message = TextSendMessage(
+        text=f"Received location:\nTitle: {title}\nAddress: {address}\nLatitude: {latitude}\nLongitude: {longitude}"
+    )
+
+    # 使用 Line Bot API 回覆訊息
+    line_bot_api.reply_message(event.reply_token, reply_message)
     
 
 import os
