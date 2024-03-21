@@ -80,7 +80,7 @@ def Introduction(event):
     intro = "我是摳摳霸特~~~\n"
     intro +="我是由Google Gemini API串接的Linebot，可以回答各種問題\n"
     intro+="如果想要問我關於圖片的意見，請在傳一張圖片後下達一行指示!\n"
-    intro+="祝您使用愉快\n"
+    intro+="祝您使用愉快"
     sendTextMessage(event,intro)
     return "sucess"
 def AskForUserLocation(event):
@@ -109,7 +109,7 @@ def FindRestaurant(event,keyword="",radius=1000):
     Update_Chat([sample,response.text])
     return "sucess"
 
-def FindWeather():
+def FindWeather(event):
     print("今天天氣很好")
     return "sucess"
 
@@ -146,6 +146,7 @@ def handle_image_message(event):
 def handle_location_message(event):
     global Location
     location_message = event.message
+    Location={}
     Location['lat'] = location_message.latitude
     Location['lng'] = location_message.longitude
     sendTextMessage(event,str(Location))
