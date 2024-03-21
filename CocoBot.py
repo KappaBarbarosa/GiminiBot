@@ -50,6 +50,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     msg= event.message.text
+    global hold_image
     if hold_image is not None:
         response = ImageModel.generate_content([msg,hold_image],safety_settings=safety_config)
         hold_image=None
@@ -75,6 +76,7 @@ def handle_text_message(event):
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
     #echo
+    global hold_image
     message_content = line_bot_api.get_message_content(event.message.id)
     image_data = b""
     for chunk in message_content.iter_content():
