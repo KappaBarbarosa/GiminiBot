@@ -49,9 +49,10 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    msg= event.message.text
     global hold_image
     global last_response
+    global chat
+    msg= event.message.text
     if hold_image is not None:
         response = ImageModel.generate_content([msg,hold_image],safety_settings=safety_config)
         hold_image=None
