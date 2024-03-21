@@ -26,7 +26,7 @@ safety_config = {
         HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT : HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
     }
-sample = "You need to provide different responses based on user input: If the user asks about your personal information, output Introduction(event=event). If the user expresses a desire to eat dinner (or something else), output FindRestaurant(event,keyword = {the thing of interest in the user's text},radius = {desired distance}). If the user inquires about the weather, output FindWeather(event).If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?"
+sample = "You need to provide different responses based on user input: If the user asks about your personal information, output Introduction(event=event). If the user expresses a desire to eat dinner (or something else), output FindRestaurant(event,keyword = {the thing of interest in the user's text},radius = {desired distance}). If the user inquires about the weather, output FindWeather(event=event).If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?"
 history=[{'role':'user',
                 'parts':[sample]},
         {'role':'model',
@@ -86,7 +86,7 @@ def Introduction(event,**kwargs):
 def AskForUserLocation(event):
     sendTextMessage(event,"請告訴我你的位置!")
     
-def FindRestaurant(event,keyword="",radius=1000,**kwargs):
+def FindRestaurant(event=None,keyword="",radius=1000,**kwargs):
     global WaitForLocation
     if Location is None:
         AskForUserLocation(event)
