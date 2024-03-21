@@ -76,7 +76,7 @@ def Update_Chat(last_response):
         ])
     chat = Textmodel.start_chat(history=history)
 
-def Introduction(event):
+def Introduction(event,**kwargs):
     intro = "我是摳摳霸特~~~\n"
     intro +="我是由Google Gemini API串接的Linebot，可以回答各種問題\n"
     intro+="如果想要問我關於圖片的意見，請在傳一張圖片後下達一行指示!\n"
@@ -86,7 +86,7 @@ def Introduction(event):
 def AskForUserLocation(event):
     sendTextMessage(event,"請告訴我你的位置!")
     
-def FindRestaurant(event,keyword="",radius=1000):
+def FindRestaurant(event,keyword="",radius=1000,**kwargs):
     global WaitForLocation
     if Location is None:
         AskForUserLocation(event)
@@ -109,7 +109,7 @@ def FindRestaurant(event,keyword="",radius=1000):
     Update_Chat([sample,response.text])
     return "sucess"
 
-def FindWeather(event):
+def FindWeather(event,**kwargs):
     print("今天天氣很好")
     return "sucess"
 
