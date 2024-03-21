@@ -26,19 +26,19 @@ safety_config = {
         HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT : HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
     }
-sample = "You need to provide different responses based on user input: If the user asks about your personal information, output Introduction(). If the user expresses a desire to eat dinner (or something else), output FindRestaurant(keyword = {the thing of interest in the user's text},radius = {desired distance}). If the user inquires about the weather, output FindWeather().If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?"
+sample = "You need to provide different responses based on user input: If the user asks about your personal information, output Introduction(event). If the user expresses a desire to eat dinner (or something else), output FindRestaurant(event,keyword = {the thing of interest in the user's text},radius = {desired distance}). If the user inquires about the weather, output FindWeather(event).If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?"
 history=[{'role':'user',
                 'parts':[sample]},
         {'role':'model',
-        'parts':["FindRestaurant()"]},
+        'parts':["FindRestaurant(event)"]},
         {'role':'user',
                 'parts':["Tell me something about you"]},
         {'role':'model',
-        'parts':["Introduction()"]},
+        'parts':["Introduction(event)"]},
         {'role':'user',
                 'parts':["how about some ramen nearby?"]},
         {'role':'model',
-        'parts':["FindRestaurant(keyword = \"ramen\",radius=1000)"]},
+        'parts':["FindRestaurant(event,keyword = \"ramen\",radius=1000)"]},
                 ]
 chat = Textmodel.start_chat(history=history)
 app = Flask(__name__)
