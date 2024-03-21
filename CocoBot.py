@@ -86,7 +86,7 @@ def Introduction(event,**kwargs):
 def AskForUserLocation(event):
     sendTextMessage(event,"請告訴我你的位置!")
     
-def FindRestaurant(event=None,keyword="",radius=1000):
+def FindRestaurant(event=None,keyword="Restaurant",radius=1000):
     global WaitForLocation
     if Location is None:
         AskForUserLocation(event)
@@ -124,12 +124,12 @@ def handle_text_message(event):
         Update_Chat([f'I send an image to you and ask {msg}',response.text])
     else:
         response = chat.send_message(msg,safety_settings=safety_config)
-        try:
-            result = eval(response.text)
-            if result != "sucess":
-                sendTextMessage(event,result)
-        except:
-            sendTextMessage(event,response.text)
+        # try:
+        result = eval(response.text)
+        if result != "sucess":
+            sendTextMessage(event,result)
+        # except:
+        #     sendTextMessage(event,response.text)
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
