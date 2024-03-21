@@ -31,7 +31,7 @@ chat = Textmodel.start_chat(history=[])
 app = Flask(__name__)
 
 hold_image = None
-last_response = 0
+last_response = None
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -51,6 +51,7 @@ def callback():
 def handle_text_message(event):
     msg= event.message.text
     global hold_image
+    global last_response
     if hold_image is not None:
         response = ImageModel.generate_content([msg,hold_image],safety_settings=safety_config)
         hold_image=None
