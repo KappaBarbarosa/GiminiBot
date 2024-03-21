@@ -30,7 +30,7 @@ sample = "You need to provide different responses based on user input: If the us
 history=[{'role':'user',
                 'parts':[sample]},
         {'role':'model',
-        'parts':["FindRestaurant(event=event)"]},
+        'parts':["FindRestaurant(event)"]},
         {'role':'user',
                 'parts':["Tell me something about you"]},
         {'role':'model',
@@ -86,7 +86,7 @@ def Introduction(event,**kwargs):
 def AskForUserLocation(event):
     sendTextMessage(event,"請告訴我你的位置!")
     
-def FindRestaurant(event=None,keyword="",radius=1000,**kwargs):
+def FindRestaurant(event=None,keyword="",radius=1000):
     global WaitForLocation
     if Location is None:
         AskForUserLocation(event)
@@ -150,8 +150,9 @@ def handle_location_message(event):
     Location['lat'] = location_message.latitude
     Location['lng'] = location_message.longitude
     if WaitForLocation is not None:
-        if(WaitForLocation['type'] == "Restaurant"):
-            FindRestaurant(event=event,keyword=WaitForLocation['keyword'],radius=WaitForLocation['radius'])
+        if WaitForLocation['type'] == "Restaurant":
+            sendTextMessage(event,str(WaitForLocation))
+            FindRestaurant(event,keyword=WaitForLocation['keyword'],radius=WaitForLocation['radius'])
     
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
