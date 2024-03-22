@@ -95,7 +95,7 @@ def FindRestaurant(event=None,keyword="Restaurant",radius=1000):
     else:
         places_result = gmaps.places_nearby(Location, keyword=keyword,type='restaurant', radius=radius,language='zh-TW')['results']
     if len(places_result) >5:
-        places_result = radius[:6]
+        places_result = places_result[:6]
     data=[]
     keypoints=['business_status','name','plus_code','rating','types','vicinity']
     for result in places_result:
