@@ -124,12 +124,12 @@ def handle_text_message(event):
         Update_Chat([f'I send an image to you and ask {msg}',response.text])
     else:
         response = chat.send_message(msg,safety_settings=safety_config)
-        # try:
-        result = eval(response.text)
-        if result != "sucess":
-            sendTextMessage(event,result)
-        # except:
-        #     sendTextMessage(event,response.text)
+        try:
+            result = eval(response.text)
+            if result != "sucess":
+                sendTextMessage(event,result)
+        except:
+            sendTextMessage(event,response.text)
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
