@@ -151,7 +151,6 @@ def handle_location_message(event):
     Location['lng'] = location_message.longitude
     if WaitForLocation is not None:
         if WaitForLocation['type'] == "Restaurant":
-            sendTextMessage(event,str(WaitForLocation))
             FindRestaurant(event,keyword=WaitForLocation['keyword'],radius=WaitForLocation['radius'])
     
 if __name__ == "__main__":
