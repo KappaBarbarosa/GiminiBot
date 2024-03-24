@@ -155,7 +155,7 @@ def FindWeather(event,query):
             'weather discription':data['weather'][0]['description']
         })
         ct+=1
-    sample = f'你是一名氣象專家，請你根據現在天氣的資訊{cur_data}和接下來的天氣{forcast}做一個專業的天氣預報'
+    sample = f'你是一名氣象專家，請你根據現在天氣的資訊{cur_data}和接下來的天氣{forcast}，回答用戶的問題: {query}'
     response = Textmodel.generate_content(sample)
     sendTextMessage(event,response.text)
     Update_Chat([sample,response.text])
@@ -201,7 +201,7 @@ def handle_location_message(event):
         if WaitForLocation['type'] == "Restaurant":
             FindRestaurant(event,keyword=WaitForLocation['keyword'],radius=WaitForLocation['radius'])
         elif WaitForLocation['type'] == "Weather":
-            FindWeather(event)
+            FindWeather(event,query=WaitForLocation['query'])
     
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
