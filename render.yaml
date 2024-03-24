@@ -15,3 +15,5 @@ services:
     sync: false
   - key: GOOGLE_MAPS_API_KEY
     sync: false
+  - key: WEATHER_KEY
+    sync: false

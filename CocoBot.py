@@ -12,12 +12,21 @@ import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 import googlemaps
 import os
+from datetime import datetime
+import requests
 #line token
 
 gmaps =googlemaps.Client(key=os.getenv("GOOGLE_MAPS_API_KEY"))
 line_bot_api = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
 handler = WebhookHandler(os.getenv("CHANNEL_SECRET"))
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+Weather_parameters = {
+    "lat": None,
+    "lon": None,
+    "appid": os.getenv("WEATHER_KEY"),
+    "units":"metric"
+    }
+
 Textmodel = genai.GenerativeModel('gemini-pro')
 ImageModel = genai.GenerativeModel('gemini-pro-vision')
 safety_config = {
@@ -26,7 +35,7 @@ safety_config = {
         HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT : HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
     }
-sample = "You need to provide different responses based on user input: If the user asks about your personal information, output Introduction(event=event). If the user expresses a desire to eat dinner (or something else), output FindRestaurant(event,keyword = {the thing of interest in the user's text},radius = {desired distance}). If the user inquires about the weather, output FindWeather(event=event).If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?"
+sample = "You need to provide different responses based on user input: If the user asks about your information or who are you, output Introduction(event=event). If the user expresses a desire to eat something), output FindRestaurant(event,keyword = {the thing of interest in the user's text},radius = {desired distance}). If the user inquires about the weather, output FindWeather(event=event). If the user want to change the location, output AskForUserLocation(event).If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?"
 history=[{'role':'user',
                 'parts':[sample]},
         {'role':'model',
@@ -110,7 +119,43 @@ def FindRestaurant(event=None,keyword="Restaurant",radius=1000):
     return "sucess"
 
 def FindWeather(event,**kwargs):
-    print("今天天氣很好")
+    global WaitForLocation
+    if Location is None:
+        AskForUserLocation(event)
+        WaitForLocation = {"type":"Weather"}
+        return "sucess"
+    else:
+        Weather_parameters['lat'] = Location['lat']
+        Weather_parameters['lon'] = Location['lng']
+
+    response = requests.get(url="https://api.openweathermap.org/data/2.5/weather?", params=Weather_parameters)
+    response.raise_for_status()
+    cur_data = response.json()
+    response = requests.get(url="https://api.openweathermap.org/data/2.5/forecast?", params=Weather_parameters)
+    response.raise_for_status()
+    weather_data = response.json()
+    forcast = []
+    now = datetime.now()
+    ct = 0
+    for data in weather_data['list']:
+        dt = datetime.fromtimestamp(data['dt']) 
+        if dt < now:
+            continue
+        if ct > 6:
+             break
+        
+        forcast.append({
+            'time': dt.strftime('%m-%d %H:%M:%S'),
+            'temp': data['main']['temp'],
+            'humidity': data['main']['humidity'],
+            'weather': data['weather'][0]['main'],
+            'weather discription':data['weather'][0]['description']
+        })
+        ct+=1
+    sample = f'你是一名氣象主播，請你根據現在天氣的資訊{cur_data}和接下來的天氣{forcast}做一個專業的天氣預報'
+    response = Textmodel.generate_content(sample)
+    sendTextMessage(event,response.text)
+    Update_Chat([sample,response.text])
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -152,6 +197,8 @@ def handle_location_message(event):
     if WaitForLocation is not None:
         if WaitForLocation['type'] == "Restaurant":
             FindRestaurant(event,keyword=WaitForLocation['keyword'],radius=WaitForLocation['radius'])
+        elif WaitForLocation['type'] == "Location":
+            FindWeather(event)
     
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
