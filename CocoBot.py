@@ -35,7 +35,7 @@ safety_config = {
         HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT : HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
     }
-sample = "You need to provide different responses based on user input: If the user asks about your information or who are you, output Introduction(event=event). If the user expresses a desire to eat something), output FindRestaurant(event,keyword = {the thing of interest in the user's text},radius = {desired distance}). If the user inquires about the weather, output FindWeather(event=event). If the user want to change the location, output AskForUserLocation(event).If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?"
+sample = "You need to provide different responses based on user input: If the user asks about your information or who are you, output Introduction(event=event). If the user expresses a desire to eat something), output FindRestaurant(event,keyword = {the thing of interest in the user's text},radius = {desired distance}). If the user inquires about the weather, output FindWeather(event=event,query={user's query}). If the user want to change the location, output AskForUserLocation(event).If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?"
 history=[{'role':'user',
                 'parts':[sample]},
         {'role':'model',
@@ -48,6 +48,10 @@ history=[{'role':'user',
                 'parts':["how about some ramen nearby?"]},
         {'role':'model',
         'parts':["FindRestaurant(event=event,keyword = \"ramen\",radius=1000)"]},
+        {'role':'user',
+                'parts':["Will today be hot?"]},
+        {'role':'model',
+        'parts':["FindWeather(event=event,query = \"Will today be hot?\")"]},
                 ]
 chat = Textmodel.start_chat(history=history)
 app = Flask(__name__)
@@ -118,11 +122,11 @@ def FindRestaurant(event=None,keyword="Restaurant",radius=1000):
     Update_Chat([sample,response.text])
     return "sucess"
 
-def FindWeather(event):
+def FindWeather(event,query):
     global WaitForLocation
     if Location is None:
         AskForUserLocation(event)
-        WaitForLocation = {"type":"Weather"}
+        WaitForLocation = {"type":"Weather","query":query}
         return "sucess"
     else:
         Weather_parameters['lat'] = Location['lat']
@@ -146,13 +150,12 @@ def FindWeather(event):
         
         forcast.append({
             'time': dt.strftime('%m-%d %H:%M:%S'),
-            'temp': data['main']['temp'],
-            'humidity': data['main']['humidity'],
+            'main': data['main'],
             'weather': data['weather'][0]['main'],
             'weather discription':data['weather'][0]['description']
         })
         ct+=1
-    sample = f'你是一名氣象主播，請你根據現在天氣的資訊{cur_data}和接下來的天氣{forcast}做一個專業的天氣預報'
+    sample = f'你是一名氣象專家，請你根據現在天氣的資訊{cur_data}和接下來的天氣{forcast}做一個專業的天氣預報'
     response = Textmodel.generate_content(sample)
     sendTextMessage(event,response.text)
     Update_Chat([sample,response.text])
@@ -169,12 +172,12 @@ def handle_text_message(event):
         Update_Chat([f'I send an image to you and ask {msg}',response.text])
     else:
         response = chat.send_message(msg,safety_settings=safety_config)
-        # try:
-        result = eval(response.text)
-        if result != "sucess":
-            sendTextMessage(event,result)
-        # except:
-        #     sendTextMessage(event,response.text)
+        try:
+            result = eval(response.text)
+            if result != "sucess":
+                sendTextMessage(event,result)
+        except:
+            sendTextMessage(event,response.text)
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
@@ -197,7 +200,7 @@ def handle_location_message(event):
     if WaitForLocation is not None:
         if WaitForLocation['type'] == "Restaurant":
             FindRestaurant(event,keyword=WaitForLocation['keyword'],radius=WaitForLocation['radius'])
-        elif WaitForLocation['type'] == "Location":
+        elif WaitForLocation['type'] == "Weather":
             FindWeather(event)
     
 if __name__ == "__main__":
