@@ -116,7 +116,7 @@ def FindRestaurant(event=None,query="",keyword="Restaurant",radius=1000):
         for keypoint in keypoints:
             d[keypoint] = result[keypoint]
         data.append(d)
-    sample = f'這是一些餐廳的google map資訊，請你根據這些資訊推薦這些餐廳:{str(data)}'
+    sample = f'這是一些餐廳的google map資訊，請你根據這些資訊推薦這些餐廳:{str(data)}，並回答用戶的問題: {query}'
     response = Textmodel.generate_content(sample)
     sendTextMessage(event,response.text)
     Update_Chat([sample,response.text])
