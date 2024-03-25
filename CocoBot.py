@@ -13,8 +13,9 @@ from google.generativeai.types import HarmCategory, HarmBlockThreshold
 import googlemaps
 import os
 from datetime import datetime
+from sticker_list import sticks,keys
 import requests
-#line token
+import random
 
 gmaps =googlemaps.Client(key=os.getenv("GOOGLE_MAPS_API_KEY"))
 line_bot_api = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
@@ -181,8 +182,10 @@ def handle_text_message(event):
 
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker_message(event):
-    msg = event.message
-    sendTextMessage(event,str([msg.sticker_id,msg.package_id,msg.sticker_resource_type,msg.keywords,msg.text]))
+    random_package_id = random.choice(keys)
+    random_sticker_id = random.randint(sticks[keys][0],sticks[keys][1])
+    sticker_message = StickerSendMessage(package_id=random_package_id, sticker_id=random_sticker_id)
+    line_bot_api.reply_message(event.reply_token,sticker_message)
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
