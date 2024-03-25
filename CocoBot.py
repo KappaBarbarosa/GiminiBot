@@ -10,11 +10,10 @@ from PIL import Image
 import io
 import google.generativeai as genai
 from User import User
-from utils import *
+from parameters import *
+from functions import *
 import googlemaps
 import os
-from datetime import datetime
-import requests
 import random
 
 gmaps =googlemaps.Client(key=os.getenv("GOOGLE_MAPS_API_KEY"))
@@ -51,40 +50,7 @@ def varified_user(uid):
         Users[uid] = User(uid,Textmodel)
 
 def Introduction(event,**kwargs):
-    intro = "我是 $$$$$\n"
-    intro +="我是由Google Gemini API串接的Linebot，可以回答各種問題 $\n"
-    intro +="如果想要問我關於圖片的意見，請在傳一張圖片後下達一行指示!\n"
-    intro +="當我向您詢問位置時，請輸入Line的位置資訊!\n"
-    intro +="祝您使用愉快!"
-    emojis = [
-      {
-        "index": 3,
-        "productId": "5ac21a8c040ab15980c9b43f",
-        "emojiId": "003"
-      },
-      {
-        "index": 4,
-        "productId": "5ac21a8c040ab15980c9b43f",
-        "emojiId": "015"
-      },
-      {
-        "index": 5,
-        "productId": "5ac21a8c040ab15980c9b43f",
-        "emojiId": "003"
-      },
-      {
-        "index": 6,
-        "productId": "5ac1bfd5040ab15980c9b435",
-        "emojiId": "015"
-      },
-      {
-        "index": 7,
-        "productId": "5ac22bad031a6752fb806d67",
-        "emojiId": "051"
-      }
-    ] 
-    sendTextMessage(event,intro,emojis=emojis 
-)
+    sendTextMessage(event,intro,emojis=emojis)
     return "sucess"
 
 def AskForUserLocation(event):
@@ -144,12 +110,12 @@ def handle_text_message(event):
         sendTextMessage(event,response.text)
     else:
         response = Users[uid].chat.send_message(msg,safety_settings=safety_config)
-        # try:
-        result = eval(response.text)
-        if result != "sucess":
-            sendTextMessage(event,result)
-        # except:
-        #     sendTextMessage(event,response.text)
+        try:
+            result = eval(response.text)
+            if result != "sucess":
+                sendTextMessage(event,result)
+        except:
+            sendTextMessage(event,response.text)
 
 
 @handler.add(MessageEvent, message=StickerMessage)

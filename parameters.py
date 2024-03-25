@@ -46,25 +46,41 @@ sticks = {
 }
 keys = list(sticks.keys())
 
-def RequestWeather(weather_parameters):
-    response = requests.get(url="https://api.openweathermap.org/data/2.5/weather?", params=weather_parameters)
-    response.raise_for_status()
-    cur_data = response.json()
-    response = requests.get(url="https://api.openweathermap.org/data/2.5/forecast?", params=weather_parameters)
-    response.raise_for_status()
-    weather_data = response.json()
-    forcast = []
-    now = datetime.now()
-    for data in weather_data['list']:
-        dt = datetime.fromtimestamp(data['dt']) 
-        if dt < now:
-            continue
-        if len(forcast) > 6:
-             break
-        forcast.append({
-            'time': dt.strftime('%m-%d %H:%M:%S'),
-            'main': data['main'],
-            'weather': data['weather'][0]['main'],
-            'weather discription':data['weather'][0]['description']
-        })
-    return cur_data,forcast
+intro = "我是 $$$$$\n"
+intro +="我是由Google Gemini API串接的Linebot，可以回答各種問題 $\n"
+intro +="如果想要問我關於圖片的意見，請在傳一張圖片後下達一行指示!\n"
+intro +="當我向您詢問位置時，請輸入Line的位置資訊!\n"
+intro +="祝您使用愉快!"
+emojis = [
+      {
+        "index": 3,
+        "productId": "5ac21a8c040ab15980c9b43f",
+        "emojiId": "003"
+      },
+      {
+        "index": 4,
+        "productId": "5ac21a8c040ab15980c9b43f",
+        "emojiId": "015"
+      },
+      {
+        "index": 5,
+        "productId": "5ac21a8c040ab15980c9b43f",
+        "emojiId": "003"
+      },
+      {
+        "index": 6,
+        "productId": "5ac21a8c040ab15980c9b43f",
+        "emojiId": "015"
+      },
+      {
+        "index": 7,
+        "productId": "5ac22bad031a6752fb806d67",
+        "emojiId": "051"
+      },
+      {
+        "index": 49,
+        "productId": "5ac1bfd5040ab15980c9b435",
+        "emojiId": "082"
+      }
+    ] 
+
