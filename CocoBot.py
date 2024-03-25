@@ -4,7 +4,7 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
-    TextMessage,MessageEvent,TextSendMessage, ImageMessage, LocationMessage
+    TextMessage,MessageEvent,TextSendMessage, ImageMessage, LocationMessage,StickerMessage,StickerSendMessage
 )
 from PIL import Image
 import io
@@ -178,6 +178,10 @@ def handle_text_message(event):
                 sendTextMessage(event,result)
         except:
             sendTextMessage(event,response.text)
+
+@handler.add(MessageEvent, message=StickerMessage)
+def handle_sticker_message(event):
+    sendTextMessage(event,event['message'])
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
