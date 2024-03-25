@@ -1,22 +1,48 @@
-# Deploy LINE Bot Python Examples on Render
+# CocoBot: Gemini with LINE Bot
 
-This repo can be used to deploy python examples in the [line-bot-sdk-python](https://github.com/line/line-bot-sdk-python/tree/master/examples) on [Render](https://render.com/).
+This repo is a weekly side project for learning how to combine Google services with  LINE Messaging API.
+
 ## Prerequisites
-Make sure you have the following:
+Before getting started, ensure you have the following:
 - A dedicated [Messaging API channel](https://developers.line.biz/en/docs/messaging-api/getting-started/) for your bot.
-- A [Render account](https://dashboard.render.com/register) that doesn't require credit card to sign up.
+- [Google Gemini API key](https://ai.google.dev/?gad_source=1&gclid=Cj0KCQjwwYSwBhDcARIsAOyL0fg2TKRmD0X3U-M9uM0aj5aWsmJOPDBpRare6pMc1oujvC9Z0wVHbKQaAi08EALw_wcB)
+- [Google Maps API key](https://developers.google.com/maps?hl=zh-tw)
+- [OpenWeatherMap API key](https://openweathermap.org/api)
+- A [Render account](https://dashboard.render.com/register) (no credit card required).
+- You can follow [this repository](https://github.com/haojiwu/line-bot-python-on-render) to learn how to deploy the LINE bot to Render.
 
-## Deployment
-1. Fork this repo.
-2. Update `render.yaml` to comment/uncomment the services of LINE bot examples you want to deploy.
-3. Cieck to deploy
-   
-   [![Deploy to Render](http://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+## Features
 
-4. You will be prompted to input LINE channel secret and [access token](https://developers.line.biz/en/docs/messaging-api/channel-access-tokens/). You can find them on the [LINE Developers Console](https://developers.line.biz/console/). Channel secret is on the channel's `Basic settings` tab. Channel access token is on the channel's `Messaging API` tab.
-5. Once the bot servcie is live, find the service `onrender` URL (e.g., `https://line-bot-python-<something unique>.onrender.com`) on the Dashboard. Append `/callback` to the service URL to build the webhook URL (e.g., `https://line-bot-python-<something unique>.onrender.com/callback`). Paste the webhook URL to the `Webhook settings` section on the LINE channel's `Messaging API` tab on the [LINE Developers Console](https://developers.line.biz/console/). Also enable `Use webhook` on the same section.
-6. Add the LINE Official Account associated with your bot as a friend on LINE by scanning the QR code on the `Messaging API` tab of your channel settings on the [LINE Developers Console](https://developers.line.biz/console/).
-7. That's it. Send your LINE Official Account a text message on LINE and confirm that it responds with the same message.
+### 1. Text Conversation
+- Users can engage in conversations with the bot on various topics.
+- The bot utilizes the **Gemini-Pro** model to generate responses, incorporating historical context and basic rules.
+- **Prompt Engineering**: Enable users to execute functions via natural language prompts rather than explicit instructions.
+    - ~~!restaurant~~ 
+    - I'm hungry, what's for dinner?
 
-## Notes
-- If your LINE bot app files are in the same repo as `render.yaml`, you don't need to specify `repo` in the `render.yaml`. You can find more information in the [Render Blueprint spec](https://render.com/docs/blueprint-spec#repo--branch).
+### 2. Image Description
+- Upon receiving an image and a prompt, the bot leverages the **Gemini-Pro-Vision** model to generate a response.
+- Note: Gemini-Pro-Vision does not support history memory.
+
+### 3. Location-based Recommendations
+- Users can request restaurant recommendations based on their current location.
+- The bot utilizes the Google Maps API to find nearby restaurants and provide tailored recommendations.
+- Users can modify **Keywords** and **Search radius** using natural language.
+
+### 4. Weather Information
+- Users can inquire about current weather conditions and forecasts for their location.
+- The bot fetches weather data using the OpenWeatherMap API and presents it to the users.
+
+### 5. LINE Stickers Reply
+- Upon receiving a LINE Sticker, the bot randomly selects a LINE Official Sticker to reply.
+
+## Implementation Details
+- **Example-driven Adaptation**: Utilize a set of examples to guide the LLM towards generating outputs aligned with desired criteria or context.
+- **Parsing**: Extract required function parameters from user queries via the Gemini model. This enables dynamic adjustment of function results based on user feedback.
+- For more details, refer to [parameter.py](https://github.com/KappaBarbarosa/CocoBot/blob/master/parameters.py).
+
+## Future Plans
+- Integrate a **database** system for permanent storage of conversation content and enhance **RAG** (Retrieval-Augmented Generation) effectiveness.
+- Connect to more useful APIs, such as Google Search, Google News, and bus information.
+- Integrate additional **LINE features** to create a more lifestyle-oriented bot.
+
