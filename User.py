@@ -4,7 +4,7 @@ from utils import safety_config,history
 class User():
     def __init__(self, user_id,Textmodel):
         self.user_id = user_id
-        self.weather_parameter  = {
+        self.weather_parameters  = {
         "lat": None,
         "lon": None,
         "appid": os.getenv("WEATHER_KEY"),
