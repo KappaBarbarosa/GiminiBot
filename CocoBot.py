@@ -120,8 +120,8 @@ def handle_text_message(event):
     varified_user(uid)
     msg= event.message.text
     if Users[uid].hold_image is not None:
-        response = ImageModel.generate_content([msg,hold_image],safety_settings=safety_config)
-        hold_image=None
+        response = ImageModel.generate_content([msg,Users[uid].hold_image],safety_settings=safety_config)
+        Users[uid].hold_image=None
         Users[uid].update_chat([f'I send an image to you and ask {msg}',response.text])
         sendTextMessage(event,response.text)
     else:
