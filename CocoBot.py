@@ -110,8 +110,8 @@ def handle_text_message(event):
         sendTextMessage(event,response.text)
     else:
         response = Users[uid].chat.send_message(msg,safety_settings=safety_config)
+        result = eval(response.text)
         try:
-            result = eval(response.text)
             if result != "sucess":
                 sendTextMessage(event,result)
         except:
