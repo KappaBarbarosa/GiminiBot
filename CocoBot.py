@@ -14,7 +14,6 @@ from utils import *
 import googlemaps
 import os
 from datetime import datetime
-from sticker_list import sticks,keys
 import requests
 import random
 
@@ -65,8 +64,8 @@ def varified_user(uid):
 def Introduction(event,**kwargs):
     intro = "我是摳摳霸特~~~\n"
     intro +="我是由Google Gemini API串接的Linebot，可以回答各種問題\n"
-    intro+="如果想要問我關於圖片的意見，請在傳一張圖片後下達一行指示!\n"
-    intro+="祝您使用愉快"
+    intro +="如果想要問我關於圖片的意見，請在傳一張圖片後下達一行指示!\n"
+    intro +="祝您使用愉快"
     sendTextMessage(event,intro)
     return "sucess"
 def AskForUserLocation(event):
