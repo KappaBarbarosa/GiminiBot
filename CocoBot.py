@@ -182,7 +182,7 @@ def handle_text_message(event):
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker_message(event):
     msg = event.message
-    sendTextMessage(event,[msg.sticker_id,msg.package_id,msg.sticker_resource_type,msg.keywords,msg.text])
+    sendTextMessage(event,str([msg.sticker_id,msg.package_id,msg.sticker_resource_type,msg.keywords,msg.text]))
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
