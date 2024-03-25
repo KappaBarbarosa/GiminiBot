@@ -1,6 +1,5 @@
 import os
-import google.generativeai as genai
-from utils import safety_config,history
+from parameters import history
 class User():
     def __init__(self, user_id,Textmodel):
         self.user_id = user_id
