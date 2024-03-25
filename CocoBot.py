@@ -183,7 +183,7 @@ def handle_text_message(event):
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker_message(event):
     random_package_id = random.choice(keys)
-    random_sticker_id = random.randint(sticks[keys][0],sticks[keys][1])
+    random_sticker_id = random.randint(sticks[random_package_id][0],sticks[random_package_id][1])
     sticker_message = StickerSendMessage(package_id=random_package_id, sticker_id=random_sticker_id)
     line_bot_api.reply_message(event.reply_token,sticker_message)
 
