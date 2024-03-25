@@ -16,6 +16,7 @@ class User():
         self.last_response = None
         self.Location = None
         self.WaitForLocation = None 
+    
     def update_chat(self,last_response):
         history = self.chat.history
         history.extend([
@@ -25,7 +26,10 @@ class User():
             'parts':[last_response[1]]},
             ])
         self.chat = self.Textmodel.start_chat(history=history)
+    
     def update_location(self,location_message):
         self.Location = {}
-        self.weather_parameters['lat'] = self.Location['lat'] = location_message.latitude
-        self.weather_parameters['lon'] = self.Location['lng'] = location_message.longitude
+        self.weather_parameters['lat'] = location_message.latitude
+        self.Location['lat'] = location_message.latitude
+        self.weather_parameters['lon'] = location_message.longitude
+        self.Location['lng'] = location_message.longitude

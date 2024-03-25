@@ -21,24 +21,12 @@ gmaps =googlemaps.Client(key=os.getenv("GOOGLE_MAPS_API_KEY"))
 line_bot_api = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
 handler = WebhookHandler(os.getenv("CHANNEL_SECRET"))
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-Weather_parameters = {
-    "lat": None,
-    "lon": None,
-    "appid": os.getenv("WEATHER_KEY"),
-    "units":"metric"
-    }
+
 Users = {}
 Textmodel = genai.GenerativeModel('gemini-pro')
 ImageModel = genai.GenerativeModel('gemini-pro-vision')
-
-
-chat = Textmodel.start_chat(history=history)
 app = Flask(__name__)
 
-hold_image = None
-last_response = None
-Location = None
-WaitForLocation = None
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -57,6 +45,7 @@ def callback():
 def sendTextMessage(event,text):
     message = TextSendMessage(text=text)
     line_bot_api.reply_message(event.reply_token,message)
+
 def varified_user(uid):
     if uid not in Users:
         Users[uid] = User(uid,Textmodel)
@@ -68,6 +57,7 @@ def Introduction(event,**kwargs):
     intro +="祝您使用愉快"
     sendTextMessage(event,intro)
     return "sucess"
+
 def AskForUserLocation(event):
     sendTextMessage(event,"請告訴我你的位置!")
     
@@ -126,12 +116,12 @@ def handle_text_message(event):
         sendTextMessage(event,response.text)
     else:
         response = Users[uid].chat.send_message(msg,safety_settings=safety_config)
-        try:
-            result = eval(response.text)
-            if result != "sucess":
-                sendTextMessage(event,result)
-        except:
-            sendTextMessage(event,response.text)
+        # try:
+        result = eval(response.text)
+        if result != "sucess":
+            sendTextMessage(event,result)
+        # except:
+        #     sendTextMessage(event,response.text)
 
 
 @handler.add(MessageEvent, message=StickerMessage)
