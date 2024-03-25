@@ -69,7 +69,7 @@ def FindRestaurant(event=None,query="",keyword="Restaurant",radius=1000):
         AskForUserLocation(event)
         Users[uid].WaitForLocation = {"type":"Restaurant","query":query,"keyword":keyword,"radius":radius}
         return "sucess"
-    
+    print(Users[uid].Location)
     places_result = gmaps.places_nearby(Users[uid].Location, keyword=keyword,type='restaurant', radius=radius,language='zh-TW')['results']
     data=[]
     keypoints=['business_status','name','plus_code','rating','types','vicinity']
