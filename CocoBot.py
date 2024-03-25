@@ -72,7 +72,7 @@ def AskForUserLocation(event):
     sendTextMessage(event,"請告訴我你的位置!")
     
 def FindRestaurant(event=None,query="",keyword="Restaurant",radius=1000):
-    uid = event.source.userid
+    uid = event.source.user_id
     varified_user(uid)
 
     if Users[uid].Location is None:
@@ -99,7 +99,7 @@ def FindRestaurant(event=None,query="",keyword="Restaurant",radius=1000):
 
 
 def FindWeather(event,query):
-    uid = event.source.userid
+    uid = event.source.user_id
     varified_user(uid)
     if Users[uid].Location is None:
         AskForUserLocation(event)
@@ -116,7 +116,7 @@ def FindWeather(event,query):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    uid = event.source.userid
+    uid = event.source.user_id
     varified_user(uid)
     msg= event.message.text
     if Users[uid].hold_image is not None:
@@ -144,7 +144,7 @@ def handle_sticker_message(event):
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
-    uid = event.source.userid
+    uid = event.source.user_id
     varified_user(uid)
     message_content = line_bot_api.get_message_content(event.message.id)
     image_data = b""
