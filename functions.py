@@ -1,5 +1,5 @@
 import requests
-import datetime
+from datetime import datetime
 
 def RequestWeather(weather_parameters):
     response = requests.get(url="https://api.openweathermap.org/data/2.5/weather?", params=weather_parameters)
