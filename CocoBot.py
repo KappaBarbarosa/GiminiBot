@@ -58,7 +58,7 @@ def sendTextMessage(event,text):
     message = TextSendMessage(text=text)
     line_bot_api.reply_message(event.reply_token,message)
 def varified_user(uid):
-    if Users[uid] is None:
+    if uid not in Users:
         Users[uid] = User(uid,Textmodel)
 
 def Introduction(event,**kwargs):
