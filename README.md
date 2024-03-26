@@ -1,6 +1,7 @@
 # CocoBot: Gemini with LINE Bot
 
 This repo is a weekly side project for learning how to combine Google services with  LINE Messaging API.
+
 [demo video](https://drive.google.com/file/d/1uGDsA6SwURRst06lIKqHCf0U7uCbkg4s/view?usp=drive_link)
 ## Prerequisites
 Before getting started, ensure you have the following:
