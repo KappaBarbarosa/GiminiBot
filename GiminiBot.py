@@ -128,7 +128,8 @@ def handle_text_message(event):
             result = eval(response.text)
             if result != "sucess":
                 sendTextMessage(event,result)
-        except:
+        except Exception as e:
+            print(e)
             sendTextMessage(event,response.text)
 
 
