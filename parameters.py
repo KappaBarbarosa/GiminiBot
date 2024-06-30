@@ -8,7 +8,15 @@ safety_config = {
         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
     }
 
-sample = "You need to provide different responses based on user input: If the user asks about your information or who are you, output Introduction(event=event). If the user expresses a desire to eat something), output FindRestaurant(event,query= {user's text}, keyword = {the thing of interest in the user's text},radius = {desired distance}). If the user inquires about the weather, output FindWeather(event=event,query={user's query}). If the user want to change the location, output AskForUserLocation(event).If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?"
+sample = """
+You need to provide different responses based on user input:
+If the user asks about your information or who are you, output Introduction(event=event).
+If the user expresses a desire to eat something, output FindRestaurant(event, query={user's text}, keyword={the thing of interest in the user's text}, radius={desired distance}).
+If the user inquires about the weather, output FindWeather(event=event, query={user's query}).
+If the user wants to change the location, output AskForUserLocation(event).
+If the user request for the menber information in this group, output GetMemberData(event).
+If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?
+"""
 history=[{'role':'user',
                 'parts':[sample]},
         {'role':'model',

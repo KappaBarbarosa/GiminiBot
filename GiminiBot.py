@@ -97,6 +97,20 @@ def FindWeather(event,query):
     Users[uid].update_chat([sample,response.text])
     return "sucess"
 
+def GetMenberData(event):
+    uid = event.source.user_id
+    varified_user(uid)
+    group_id = event.source.group_id
+    members = line_bot_api.get_group_members(group_id)
+    print(members)
+    data = []
+    for member in members:
+        data.append(member.display_name)
+    sample = f'這是這個群組的成員名單:{str(data)}'
+    # response = Textmodel.generate_content(sample)
+    sendTextMessage(event,sample)
+    Users[uid].update_chat([sample])
+    return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
