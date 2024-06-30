@@ -47,7 +47,7 @@ def replyTextMessage(event,text,emojis=None):
 
 def pushTextMessage(userid,text,emojis=None):
     message = TextSendMessage(text=text,emojis=emojis)
-    line_bot_api.push_message(userid.reply_token,message)
+    line_bot_api.push_message(userid,message)
 
 def varified_user(uid):
     if uid not in Users:
@@ -108,6 +108,7 @@ def DM(event):
     
     sample = f'你剛提到摳摳嗎? 摳摳最棒!摳摳最棒!'
     # response = Textmodel.generate_content(sample)
+    replyTextMessage(event,sample)
     pushTextMessage(uid,sample)
     # Users[uid].update_chat([sample])
     return "sucess"
