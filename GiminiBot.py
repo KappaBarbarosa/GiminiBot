@@ -97,7 +97,7 @@ def FindWeather(event,query):
     Users[uid].update_chat([sample,response.text])
     return "sucess"
 
-def GetMenberData(event):
+def GetMemberData(event):
     uid = event.source.user_id
     varified_user(uid)
     group_id = event.source.group_id
@@ -128,6 +128,8 @@ def handle_text_message(event):
             result = eval(response.text)
             if result != "sucess":
                 sendTextMessage(event,result)
+            else:
+                sendTextMessage(event,"Failed:"+result)
         except Exception as e:
             print(e)
             sendTextMessage(event,response.text)
