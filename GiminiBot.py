@@ -41,20 +41,24 @@ def callback():
         abort(400)
     return 'OK'
 
-def sendTextMessage(event,text,emojis=None):
+def replyTextMessage(event,text,emojis=None):
     message = TextSendMessage(text=text,emojis=emojis)
     line_bot_api.reply_message(event.reply_token,message)
+
+def pushTextMessage(userid,text,emojis=None):
+    message = TextSendMessage(text=text,emojis=emojis)
+    line_bot_api.push_message(userid.reply_token,message)
 
 def varified_user(uid):
     if uid not in Users:
         Users[uid] = User(uid,Textmodel)
 
 def Introduction(event,**kwargs):
-    sendTextMessage(event,intro,emojis=emojis)
+    replyTextMessage(event,intro,emojis=emojis)
     return "sucess"
 
 def AskForUserLocation(event):
-    sendTextMessage(event,"請告訴我你的位置!")
+    replyTextMessage(event,"請告訴我你的位置!")
     
 def FindRestaurant(event=None,query="",keyword="Restaurant",radius=1000):
     uid = event.source.user_id
@@ -77,7 +81,7 @@ def FindRestaurant(event=None,query="",keyword="Restaurant",radius=1000):
 
     sample = f'這是一些餐廳的google map資訊，請你根據這些資訊:{str(data)}，回答用戶的問題: {query}'
     response = Textmodel.generate_content(sample)
-    sendTextMessage(event,response.text)
+    replyTextMessage(event,response.text)
     Users[uid].update_chat([sample,response.text])
     return "sucess"
 
@@ -93,23 +97,19 @@ def FindWeather(event,query):
     cur_data,forcast = RequestWeather(Users[uid].weather_parameters)
     sample = f'你是一名氣象專家，請你根據現在天氣的資訊{cur_data}和接下來的天氣{forcast}，回答用戶的問題: {query}'
     response = Textmodel.generate_content(sample)
-    sendTextMessage(event,response.text)
+    replyTextMessage(event,response.text)
     Users[uid].update_chat([sample,response.text])
     return "sucess"
 
-def GetMemberData(event):
+def DM(event):
     uid = event.source.user_id
     varified_user(uid)
-    group_id = event.source.group_id
-    members = line_bot_api.get_group_member_ids(group_id)
-    print(members)
-    data = []
-    for member in members:
-        data.append(member.display_name)
-    sample = f'這是這個群組的成員名單:{str(data)}'
+    
+    
+    sample = f'你剛提到摳摳嗎? 摳摳最棒!摳摳最棒!'
     # response = Textmodel.generate_content(sample)
-    sendTextMessage(event,sample)
-    Users[uid].update_chat([sample])
+    pushTextMessage(uid,sample)
+    # Users[uid].update_chat([sample])
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -121,18 +121,18 @@ def handle_text_message(event):
         response = ImageModel.generate_content([msg,Users[uid].hold_image],safety_settings=safety_config)
         Users[uid].hold_image=None
         Users[uid].update_chat([f'I send an image to you and ask {msg}',response.text])
-        sendTextMessage(event,response.text)
+        replyTextMessage(event,response.text)
     else:
         response = Users[uid].chat.send_message(msg,safety_settings=safety_config)
         # try:
         result = eval(response.text)
         if result != "sucess":
-            sendTextMessage(event,result)
+            replyTextMessage(event,result)
         else:
-            sendTextMessage(event,"Failed:"+result)
+            replyTextMessage(event,"Failed:"+result)
         # except Exception as e:
         #     print(e)
-        #     sendTextMessage(event,response.text)
+        #     replyTextMessage(event,response.text)
 
 
 @handler.add(MessageEvent, message=StickerMessage)
