@@ -101,7 +101,7 @@ def GetMenberData(event):
     uid = event.source.user_id
     varified_user(uid)
     group_id = event.source.group_id
-    members = line_bot_api.get_group_members(group_id)
+    members = line_bot_api.get_group_member_ids(group_id)
     print(members)
     data = []
     for member in members:
