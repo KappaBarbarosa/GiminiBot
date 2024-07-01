@@ -121,10 +121,10 @@ def Embedding(event,text):
     content=text,
     task_type="retrieval_document",
     title="Embedding of single string")
-    response = f"{text} 的嵌入(長度為{len(result['embedding'])}): "+ str(result['embedding'][:50]) +  "..." 
+    response = f"{text} 的嵌入(長度為{len(result['embedding'])}): "+ str(result['embedding'])[:50], '... TRIMMED]'
     Embeddings[text] = result['embedding']
     replyTextMessage(event,response)
-    Users[uid].update_chat([response])
+    Users[uid].update_chat([event.message.text,response])
     return "sucess"
 
 def query_fn(event,  query):
@@ -149,7 +149,7 @@ def query_fn(event,  query):
     response = f"{query} 的相似度排名：\n" + "\n".join([f"{text}: {np.round(similarity,2) }" for text, similarity in zip(top_n_texts, top_n_similarities)])
     
     replyTextMessage(event, response)
-    Users[event.source.user_id].update_chat([response])
+    Users[uid].update_chat([event.message.text,response])
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)

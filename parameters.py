@@ -16,7 +16,7 @@ If the user inquires about the weather, output FindWeather(event=event, query={u
 If the user wants to change the location, output AskForUserLocation(event).
 If the user mentions about the fruit banana, output DM(event).
 If the user wants the embedding of the word or the string, output Embedding(event=event,text= {user's keyword or entired user's string}).
-If the user wants to inquire about the similarity between a query and other embeddings, output query_fn(event,query).
+If the user wants to inquire about the similarity between a query and other embeddings, output query_fn(event=event,query={user's query}).
 If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?
 """
 history=[{'role':'user',
