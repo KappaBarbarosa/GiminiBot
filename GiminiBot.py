@@ -121,8 +121,8 @@ def Embedding(event,text):
     content=text,
     task_type="retrieval_document",
     title="Embedding of single string")
-    response = f"{text} 的嵌入(長度為{len(result['embedding'])})" + str(result['embedding'])[:50] + "... TRIMMED]"
     Embeddings[text] = result['embedding']
+    response = f"{text} 的嵌入(長度為{len(result['embedding'])})" + str(result['embedding'])[:3] 
     replyTextMessage(event,response)
     Users[uid].update_chat([event.message.text,response])
     return "sucess"
