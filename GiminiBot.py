@@ -121,7 +121,7 @@ def Embedding(event,text):
     content=text,
     task_type="retrieval_document",
     title="Embedding of single string")
-    response = f"{text} 的嵌入(長度為{len(result['embedding'])})"
+    response = f"{text} 的嵌入(長度為{len(result['embedding'])})" + str(result['embedding'])[:50] + '... TRIMMED]'
     Embeddings[text] = result['embedding']
     replyTextMessage(event,response)
     Users[uid].update_chat([event.message.text,response])
@@ -164,12 +164,13 @@ def handle_text_message(event):
         replyTextMessage(event,response.text)
     else:
         response = Users[uid].chat.send_message(msg,safety_settings=safety_config)
-        # try:
-        result = eval(response.text)
-        if result != "sucess":
-            replyTextMessage(event,result)
-        # except Exception as e:
-        #     replyTextMessage(event,response.text+str(e))
+        print(response.text)
+        try:
+            result = eval(response.text)
+            if result != "sucess":
+                replyTextMessage(event,result)
+        except Exception as e:
+            replyTextMessage(event,response.text+str(e))
 
 
 @handler.add(MessageEvent, message=StickerMessage)
