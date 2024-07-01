@@ -120,8 +120,9 @@ def Embedding(event,text):
     content=text,
     task_type="retrieval_document",
     title="Embedding of single string")
-    response = f"{text} 的嵌入: "+ str(result['embedding'])[:50] + '... TRIMMED]'
+    response = f"{text} 的嵌入(長度為{len(result['embedding'])}): "+ str(result['embedding']) 
     replyTextMessage(event,response)
+    Users[uid].update_chat([response])
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -140,8 +141,7 @@ def handle_text_message(event):
             result = eval(response.text)
             if result != "sucess":
                 replyTextMessage(event,result)
-            else:
-                replyTextMessage(event,"Failed:"+result)
+
         except Exception as e:
 
             replyTextMessage(event,response.text)
