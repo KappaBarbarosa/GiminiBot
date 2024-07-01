@@ -141,10 +141,8 @@ def handle_text_message(event):
             result = eval(response.text)
             if result != "sucess":
                 replyTextMessage(event,result)
-
         except Exception as e:
-
-            replyTextMessage(event,response.text)
+            replyTextMessage(event,e)
 
 
 @handler.add(MessageEvent, message=StickerMessage)
