@@ -121,7 +121,7 @@ def Embedding(event,text):
     content=text,
     task_type="retrieval_document",
     title="Embedding of single string")
-    response = f"{text} 的嵌入(長度為{len(result['embedding'])})" + str(result['embedding'])[:50] + '... TRIMMED]'
+    response = f"{text} 的嵌入(長度為{len(result['embedding'])})" + str(result['embedding'])[:50] + "... TRIMMED]"
     Embeddings[text] = result['embedding']
     replyTextMessage(event,response)
     Users[uid].update_chat([event.message.text,response])
@@ -137,7 +137,7 @@ def query_fn(event,  query):
                               content=query,
                               task_type="retrieval_query")['embedding']
     embeddings_matrix = np.array(list(Embeddings.values()))
-    dot_products = np.dot(embeddings_matrix, request)
+    dot_products = np.dot(embeddings_matrix, request.T)
     sorted_indices = np.argsort(-dot_products)
     ranked_texts = np.array(list(Embeddings.keys()))[sorted_indices]
     
@@ -170,7 +170,7 @@ def handle_text_message(event):
             if result != "sucess":
                 replyTextMessage(event,result)
         except Exception as e:
-            replyTextMessage(event,response.text+str(e))
+            replyTextMessage(event,response.text+"\n Error:\n" +str(e))
 
 
 @handler.add(MessageEvent, message=StickerMessage)
