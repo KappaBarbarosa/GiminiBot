@@ -15,13 +15,14 @@ from functions import *
 import googlemaps
 import os
 import random
-
+import numpy as np
 gmaps =googlemaps.Client(key=os.getenv("GOOGLE_MAPS_API_KEY"))
 line_bot_api = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
 handler = WebhookHandler(os.getenv("CHANNEL_SECRET"))
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 Users = {}
+Embeddings = {}
 Textmodel = genai.GenerativeModel('gemini-pro')
 ImageModel = genai.GenerativeModel('gemini-pro-vision')
 app = Flask(__name__)
@@ -120,9 +121,35 @@ def Embedding(event,text):
     content=text,
     task_type="retrieval_document",
     title="Embedding of single string")
-    response = f"{text} 的嵌入(長度為{len(result['embedding'])}): "+ str(result['embedding']) 
+    response = f"{text} 的嵌入(長度為{len(result['embedding'])}): "+ str(result['embedding'][:50] + "...") 
+    Embeddings[text] = result['embedding']
     replyTextMessage(event,response)
     Users[uid].update_chat([response])
+    return "sucess"
+
+def query_fn(event,  query):
+    uid = event.source.user_id
+    varified_user(uid)
+    if len(Embeddings) == 0:
+        replyTextMessage(event,"目前沒有嵌入資料")
+        return "sucess"
+    request = genai.embed_content(model="models/embedding-001",
+                              content=query,
+                              task_type="retrieval_query")['embedding']
+    embeddings_matrix = np.array(list(Embeddings.values()))
+    dot_products = np.dot(embeddings_matrix, request)
+    sorted_indices = np.argsort(-dot_products)
+    ranked_texts = np.array(list(Embeddings.keys()))[sorted_indices]
+    
+    # 選出排名最高的前N個結果
+    top_n = 3 if len(Embeddings) <3 else len(Embeddings)  # 例如，選出排名最高的前5個
+    top_n_texts = ranked_texts[:top_n]
+    top_n_similarities = dot_products[sorted_indices][:top_n]
+
+    response = f"{query} 的相似度排名：\n" + "\n".join([f"{text}: {np.round(similarity,2) }" for text, similarity in zip(top_n_texts, top_n_similarities)])
+    
+    replyTextMessage(event, response)
+    Users[event.source.user_id].update_chat([response])
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
