@@ -106,11 +106,22 @@ def DM(event):
     varified_user(uid)
     
     
-    sample = f'你剛提到摳摳嗎? 摳摳最棒!摳摳最棒!'
+    sample = f'你剛提到香蕉嗎? 香蕉好吃!'
     # response = Textmodel.generate_content(sample)
-    replyTextMessage(event,sample)
     pushTextMessage(uid,sample)
     # Users[uid].update_chat([sample])
+    return "sucess"
+
+def Embedding(event,text):
+    uid = event.source.user_id
+    varified_user(uid)
+    result = genai.embed_content(
+    model="models/embedding-001",
+    content=text,
+    task_type="retrieval_document",
+    title="Embedding of single string")
+    response = f"{text} 的嵌入: "+ str(result['embedding'])[:50] + '... TRIMMED]'
+    replyTextMessage(event,response)
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -168,7 +179,7 @@ def handle_location_message(event):
             FindRestaurant(event,query=WaitForLocation['query'],keyword=WaitForLocation['keyword'],radius=WaitForLocation['radius'])
         elif WaitForLocation['type'] == "Weather":
             FindWeather(event,query=WaitForLocation['query'])
-    
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
