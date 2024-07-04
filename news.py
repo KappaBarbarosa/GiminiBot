@@ -42,19 +42,19 @@ def GetInquiredNewsContent(query, range,force_search):
             Result = {
                 'query': query,
                 'articles': articles,
-                'cur':0
+                'cur':0,
             }
-            Result = json.dumps(Result, ensure_ascii=False)
+            cur=0
+            Result1 = json.dumps(Result, ensure_ascii=False)
             with open(f'{query}_response.json', 'w+', encoding='utf-8') as f:
-                f.write(Result)
+                f.write(Result1)
        else:
             raise Exception("錯誤：無法從API獲取新聞資料")
     else:
         with open(f'{query}_response.json', 'r', encoding='utf-8') as f:
             Result = json.load(f)
-    # print(Result)
-    cur = Result['cur']    
-    articles = Result['articles']
+        cur = Result['cur'] 
+        articles = Result['articles']
 
     if len(articles) == 0:
         raise Exception("錯誤：找不到相關新聞")
