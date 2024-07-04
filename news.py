@@ -105,6 +105,3 @@ def extract_full_text_from_API(articles,cur,range=10):
             count+=1
     return count, responses
         
-
-# GetHeadlinesSummaryByCountry('tw',range=40)
-GetInquiredNewsContent('黃國昌',range=10)
