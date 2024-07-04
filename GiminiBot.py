@@ -47,9 +47,15 @@ def replyTextMessage(event,text,emojis=None):
     message = TextSendMessage(text=text,emojis=emojis)
     line_bot_api.reply_message(event.reply_token,message)
 
-def pushTextMessage(userid,text,emojis=None):
+def pushTextMessage(event,text,emojis=None):
     message = TextSendMessage(text=text,emojis=emojis)
-    line_bot_api.push_message(userid,message)
+    if event.source.type == 'group':
+        id = event.source.group_id
+    elif event.source.type == 'room':
+        id = event.source.room_id
+    else:
+        id = event.source.user_id
+    line_bot_api.push_message(id,message)
 
 def varified_user(uid):
     if uid not in Users:
@@ -110,7 +116,7 @@ def DM(event):
     
     sample = f'你剛提到香蕉嗎? 香蕉好吃!'
     # response = Textmodel.generate_content(sample)
-    pushTextMessage(uid,sample)
+    pushTextMessage(event,sample)
     # Users[uid].update_chat([sample])
     return "sucess"
 
@@ -154,13 +160,13 @@ def query_fn(event,  query):
     return "sucess"
 
 def FindNews(event,query,range=10,force_search=False):
-    try:
-        responses = GetInquiredNewsContent(query,range,force_search)
-    except Exception as e:
-        replyTextMessage(event,str(e))
-        return "sucess"
+    # try:
+    responses = GetInquiredNewsContent(query,range,force_search)
+    # except Exception as e:
+    #     replyTextMessage(event,str(e))
+    #     return "sucess"
     
-    pushTextMessage(event.source.user_id,f"以下是{query}搜尋結果:")
+    pushTextMessage(event,f"以下是{query}搜尋結果:")
     for response in responses:
         # pushTextMessage(event.source.user_id,f"原始內容長度{len(response['content'])}字")
         sample = f"這是從一個新聞網頁上擷取下來的html訊息,標題為{response['title']}，請你根據這些資訊:{response['content']}，對這份新聞做一個中文摘要，如果資訊和標題無關，只要回答 無相關三個字就好。"
@@ -168,7 +174,7 @@ def FindNews(event,query,range=10,force_search=False):
             res = Textmodel.generate_content(sample,safety_settings=safety_config)
             if res.text != "無相關":
                 output = response['title'] + "\n" + res.text + "\n"+ f'原文連結:{response["url"]}'        
-            pushTextMessage(event.source.user_id,output)
+            pushTextMessage(event,output)
         except Exception as e:
             pass
     return "sucess"
@@ -186,12 +192,12 @@ def handle_text_message(event):
     else:
         response = Users[uid].chat.send_message(msg,safety_settings=safety_config)
         print(response.text)
-        try:
-            result = eval(response.text)
-            if result != "sucess":
-                replyTextMessage(event,result)
-        except Exception as e:
-            replyTextMessage(event,(response.text+"\n Error:\n" +str(e)))
+        # try:
+        result = eval(response.text)
+        if result != "sucess":
+            replyTextMessage(event,result)
+        # except Exception as e:
+        #     replyTextMessage(event,(response.text+"\n Error:\n" +str(e)))
 
 
 @handler.add(MessageEvent, message=StickerMessage)
