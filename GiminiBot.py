@@ -166,7 +166,7 @@ def FindNews(event,query,range=10,force_search=False):
         res = Textmodel.generate_content(sample,safety_settings=safety_config)
         if res.text != "無相關":
             output = response['title'] + "\n" + res.text + "\n"+ f'原文連結:{response["url"]}'
-        pushTextMessage(event,output)
+        pushTextMessage(event.source.user_id,output)
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
