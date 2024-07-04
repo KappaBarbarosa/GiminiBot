@@ -4,3 +4,4 @@ google-generativeai
 Pillow
 googlemaps
 numpy
+beautifulsoup4
