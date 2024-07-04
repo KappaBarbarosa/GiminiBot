@@ -5,3 +5,4 @@ Pillow
 googlemaps
 numpy
 beautifulsoup4
+requests
