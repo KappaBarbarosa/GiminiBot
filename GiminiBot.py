@@ -11,7 +11,8 @@ import io
 import google.generativeai as genai
 from User import User
 from parameters import *
-from functions import *
+from weather import *
+from news import GetInquiredNewsContent
 import googlemaps
 import os
 import random
@@ -122,9 +123,9 @@ def Embedding(event,text):
     task_type="retrieval_document",
     title="Embedding of single string")
     Embeddings[text] = result['embedding']
-    response = f"{text} 的嵌入(長度為{len(result['embedding'])})" + str(result['embedding'])[:3] 
+    response = f"{text} 的嵌入 " + str(result['embedding'])[:3] 
     replyTextMessage(event,response)
-    Users[uid].update_chat([event.message.text,response])
+    Users[uid].update_chat([f"我想知道 {text}的嵌入",response])
     return "sucess"
 
 def query_fn(event,  query):
@@ -137,7 +138,7 @@ def query_fn(event,  query):
                               content=query,
                               task_type="retrieval_query")['embedding']
     embeddings_matrix = np.array(list(Embeddings.values()))
-    dot_products = np.dot(embeddings_matrix, request.T)
+    dot_products = np.dot(embeddings_matrix, np.array(request).T)
     sorted_indices = np.argsort(-dot_products)
     ranked_texts = np.array(list(Embeddings.keys()))[sorted_indices]
     
@@ -150,6 +151,22 @@ def query_fn(event,  query):
     
     replyTextMessage(event, response)
     Users[uid].update_chat([event.message.text,response])
+    return "sucess"
+
+def FindNews(event,query,range=10,force_search=False):
+    try:
+        responses = GetInquiredNewsContent(query,range,force_search)
+    except Exception as e:
+        replyTextMessage(event,str(e))
+        return "sucess"
+    
+    replyTextMessage(event,"以下是搜尋結果:")
+    for response in responses:
+        sample = f"這是從一個新聞網頁上擷取下來的html訊息,標題為{response['title']}，請你根據這些資訊:{response['content']}，對這份新聞做一個中文摘要，如果資訊和標題無關，只要回答 無相關三個字就好。"
+        res = Textmodel.generate_content(sample,safety_settings=safety_config)
+        if res.text != "無相關":
+            output = response['title'] + "\n" + res.text + "\n"+ f'原文連結:{response["url"]}'
+        pushTextMessage(event,output)
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)

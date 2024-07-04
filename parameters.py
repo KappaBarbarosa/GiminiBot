@@ -15,9 +15,10 @@ If the user expresses a desire to eat something, output FindRestaurant(event, qu
 If the user inquires about the weather, output FindWeather(event=event, query={user's query}).
 If the user wants to change the location, output AskForUserLocation(event).
 If the user mentions about the fruit banana, output DM(event).
-If the user wants the embedding of the word or the string, output Embedding(event=event,text= {user's keyword or entired user's string}).
-If the user wants to inquire about the similarity between a query and other embeddings, output query_fn(event=event,query={user's query}).
-If the user's speech is not within the above range, just have a normal conversation. For example: I am hungry, what is for dinner?
+If the user wants to find some news, output FindNews(event,query={user's query}, range={the number of news to be displayed,default is 10}).
+if the user wants to search for a specific news again, output FindNews(event=event,query={user's query},force_search=True).
+If the user's speech is not within the above range, just have a normal conversation. 
+For example: I am hungry, what is for dinner?
 """
 history=[{'role':'user',
                 'parts':[sample]},
@@ -35,6 +36,10 @@ history=[{'role':'user',
                 'parts':["Will today be hot?"]},
         {'role':'model',
         'parts':["FindWeather(event=event,query = \"Will today be hot?\")"]},
+        {'role':'user',
+                'parts':["我想了解一些關於生成式AI的新聞"]},
+        {'role':'model',
+        'parts':["GetInquiredNewsContent(event=event,query = \"Will today be hot?\")"]},
                 ]
 
 sticks = {
