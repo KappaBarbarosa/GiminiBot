@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
-
+import xml.etree.ElementTree as ET
 NEWS_API_KEY = 'c900b5c5bded495b8a00135c6dcf0267'
 
 def GetHeadlinesSummaryByCountry(country,range=10):
@@ -23,34 +23,47 @@ def GetHeadlinesSummaryByCountry(country,range=10):
     extract_full_text_from_API(articles,range)
 
 def GetInquiredNewsContent(query, range,force_search):
-    url = f'https://newsapi.org/v2/everything?q={query}&sortBy=publishedAt&apiKey={NEWS_API_KEY}'
-
+    url = f'https://news.google.com/rss/search?q={query}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant'
+    response = requests.get(url)
+    
+        # Print the title, link, and publication date of each news item
     if os.path.exists(f'{query}_response.json') == False or force_search == True:
-        response = requests.get(url).json()
-        response['query'] = query
-        cur = response['cur'] = 0
-        response['range'] = range
-        response_text = json.dumps(response, ensure_ascii=False)
-        with open(f'{query}_response.json', 'w+', encoding='utf-8') as f:
-            f.write(response_text)
+       if response.status_code == 200:
+        # Parse the XML content
+            root = ET.fromstring(response.content)
+            articles=   []
+            for item in root.findall('./channel/item'):
+                article = {
+                    'title': item.find('title').text,
+                    'url': item.find('link').text,
+                    'pubDate': item.find('pubDate').text
+                }
+                articles.append(article)
+            Result = {
+                'query': query,
+                'articles': articles,
+                'cur':0
+            }
+            Result = json.dumps(Result, ensure_ascii=False)
+            with open(f'{query}_response.json', 'w+', encoding='utf-8') as f:
+                f.write(Result)
+       else:
+            raise Exception("錯誤：無法從API獲取新聞資料")
     else:
         with open(f'{query}_response.json', 'r', encoding='utf-8') as f:
-            response = json.load(f)
-            cur = response['cur']
-        
-    articles = response['articles']
+            Result = json.load(f)
+    # print(Result)
+    cur = Result['cur']    
+    articles = Result['articles']
 
-    if response['status'] != 'ok':
-        raise Exception("錯誤：無法從API獲取新聞資料")
-        return  None    
-    if len(response['articles']) == 0:
+    if len(articles) == 0:
         raise Exception("錯誤：找不到相關新聞")
     
     count,responses = extract_full_text_from_API(articles,cur,range)
-    response['cur'] = cur+count
-    response_text = json.dumps(response, ensure_ascii=False)
+    Result['cur'] = cur+count
+    Result = json.dumps(Result, ensure_ascii=False)
     with open(f'{query}_response.json', 'w+', encoding='utf-8') as f:
-        f.write(response_text)
+        f.write(Result)
     return responses
 
 
@@ -69,24 +82,10 @@ def extract_full_text_from_API(articles,cur,range=10):
             continue
         if range == count:
             break
-        group = verify_autor_group(author=article['author'],source=article['source']['name'])
         response = requests.get(article['url'])
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        if group == 'p':
-            content = soup.find_all('p')
-            if len(content) == 0:
-                print("No content found")
-                continue
-            
-
-            responses.append({
-                'title':article['title'],
-                'content':content,
-                'url':article['url']
-            })
-            count+=1
-        elif group == 'tvbs':
+        if 'TVBS' in article['title'] :
             script_tag = soup.find('script', type='application/ld+json')
 
             # 獲取 script 標籤內的 JSON 內容
@@ -103,5 +102,19 @@ def extract_full_text_from_API(articles,cur,range=10):
                 'url':article['url']
             })
             count+=1
+        else: 
+            content = soup.find_all('p')
+            if len(content) == 0:
+                print("No content found")
+                continue
+            responses.append({
+                'title':article['title'],
+                'content':content,
+                'url':article['url']
+            })
+            count+=1
+            
     return count, responses
         
+if __name__ == '__main__':
+    GetInquiredNewsContent('生成式AI',range=3,force_search=False)
