@@ -192,12 +192,12 @@ def handle_text_message(event):
     else:
         response = Users[uid].chat.send_message(msg,safety_settings=safety_config)
         print(response.text)
-        try:
-            result = eval(response.text)
-            if result != "sucess":
-                replyTextMessage(event,result)
-        except Exception as e:
-            replyTextMessage(event,(response.text+"\n Error:\n" +str(e)))
+        # try:
+        result = eval(response.text)
+        if result != "sucess":
+            replyTextMessage(event,result)
+        # except Exception as e:
+        #     replyTextMessage(event,(response.text+"\n Error:\n" +str(e)))
 
 
 @handler.add(MessageEvent, message=StickerMessage)
