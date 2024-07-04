@@ -15,7 +15,7 @@ If the user expresses a desire to eat something, output FindRestaurant(event, qu
 If the user inquires about the weather, output FindWeather(event=event, query={user's query}).
 If the user wants to change the location, output AskForUserLocation(event).
 If the user mentions about the fruit banana, output DM(event).
-If the user wants to find some news, output FindNews(event,query={user's query}, range={the number of news to be displayed,default is 10}).
+If the user wants to find some news, output FindNews(event,query={user's query keywords}, range={the number of news to be displayed,default is 10}).
 if the user wants to search for a specific news again, output FindNews(event=event,query={user's query},force_search=True).
 If the user's speech is not within the above range, just have a normal conversation. 
 For example: I am hungry, what is for dinner?

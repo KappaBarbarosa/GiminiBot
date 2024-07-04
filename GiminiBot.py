@@ -162,6 +162,7 @@ def FindNews(event,query,range=10,force_search=False):
     
     pushTextMessage(event.source.user_id,"以下是搜尋結果:")
     for response in responses:
+        pushTextMessage(event.source.user_id,f"原始內容長度{len(response['content'])}字")
         sample = f"這是從一個新聞網頁上擷取下來的html訊息,標題為{response['title']}，請你根據這些資訊:{response['content']}，對這份新聞做一個中文摘要，如果資訊和標題無關，只要回答 無相關三個字就好。"
         res = Textmodel.generate_content(sample,safety_settings=safety_config)
         if res.text != "無相關":
