@@ -176,7 +176,7 @@ def FindNews(event,query,range=10,force_search=False):
         if res.text != "無相關":
             output = response['title'] + "\n" + res.text + "\n"+ f'原文連結: {response["url"]}'        
             pushTextMessage(event,output)
-            news+=   response['title'] + "\n" + response['content'] + "\n"
+            news+=   response['title'] + "\n" + str(response['content']) + "\n"
         # except Exception as e:
         #     pushTextMessage(event,str(e))
     sample = f"這是從多的新聞網頁上擷取下來的html訊息,，請你根據這些資訊:{news}，對所有內容進行總結。"
