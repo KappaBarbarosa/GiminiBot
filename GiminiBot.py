@@ -166,7 +166,8 @@ def FindNews(event,query,range=10,force_search=False):
     #     replyTextMessage(event,str(e))
     #     return "sucess"
     
-    pushTextMessage(event,f"以下是{query}搜尋結果:")
+    pushTextMessage(event,f"以下是{query}的搜尋結果:")
+    news = ""
     for response in responses:
         # pushTextMessage(event.source.user_id,f"原始內容長度{len(response['content'])}字")
         sample = f"這是從一個新聞網頁上擷取下來的html訊息,標題為{response['title']}，請你根據這些資訊:{response['content']}，對這份新聞做一個中文摘要，如果資訊和標題無關，只要回答 無相關三個字就好。"
@@ -175,8 +176,15 @@ def FindNews(event,query,range=10,force_search=False):
             if res.text != "無相關":
                 output = response['title'] + "\n" + res.text + "\n"+ f'原文連結:{response["url"]}'        
             pushTextMessage(event,output)
+            news+=   response['title'] + "\n" + response['content'] + "\n"
         except Exception as e:
-            pass
+            pushTextMessage(event,str(e))
+        sample = f"這是從多的新聞網頁上擷取下來的html訊息,，請你根據這些資訊:{news}，對所有內容進行總結。"
+        try:
+            res = Textmodel.generate_content(sample,safety_settings=safety_config)
+            pushTextMessage(event,res.text)
+        except Exception as e:
+            pushTextMessage(event,str(e))
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -191,7 +199,6 @@ def handle_text_message(event):
         replyTextMessage(event,response.text)
     else:
         response = Users[uid].chat.send_message(msg,safety_settings=safety_config)
-        print(response.text)
         try:
             result = eval(response.text)
             if result != "sucess":
