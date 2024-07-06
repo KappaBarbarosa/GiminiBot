@@ -170,16 +170,16 @@ def FindNews(event,query,range=10,force_search=False):
     news = ""
     for response in responses:
         # pushTextMessage(event.source.user_id,f"原始內容長度{len(response['content'])}字")
-        sample = f"這是從一個新聞網頁上擷取下來的html訊息,標題為{response['title']}，請你根據這些資訊:{response['content']}，對這份新聞做一個中文摘要，如果資訊和標題無關，只要回答 無相關三個字就好。"
+        sample = f"這是從一個新聞網頁上擷取下來的html訊息,標題為{response['title']}，請你根據這些資訊:{response['content']}，對這份新聞做一個完整中文摘要，如果資訊和標題無關，只要回答 無相關三個字就好。"
         # try:
         res = Textmodel.generate_content(sample,safety_settings=safety_config)
         if res.text != "無相關":
             output = response['title'] + "\n" + res.text + "\n"+ f'原文連結: {response["url"]}'        
             pushTextMessage(event,output)
-            news+=   response['title'] + "\n" + str(response['content']) + "\n"
+            news+=   response['title'] + "\n" + res.text + "\n"
         # except Exception as e:
         #     pushTextMessage(event,str(e))
-    sample = f"這是從多的新聞網頁上擷取下來的html訊息,，請你根據這些資訊:{news}，對所有內容進行總結。"
+    sample = f"這是多個新聞的摘要,，請你根據這些資訊:{news}，對所有內容進行總結。"
     # try:
     res = Textmodel.generate_content(sample,safety_settings=safety_config)
     pushTextMessage(event,res.text)
