@@ -174,7 +174,7 @@ def FindNews(event,query,range=10,force_search=False):
         # try:
         res = Textmodel.generate_content(sample,safety_settings=safety_config)
         if res.text != "無相關":
-            output = response['title'] + "\n" + res.text + "\n"+ f'原文連結:{response["url"]}'        
+            output = response['title'] + "\n" + res.text + "\n"+ f'原文連結: {response["url"]}'        
             pushTextMessage(event,output)
             news+=   response['title'] + "\n" + response['content'] + "\n"
         # except Exception as e:
@@ -199,12 +199,12 @@ def handle_text_message(event):
         replyTextMessage(event,response.text)
     else:
         response = Users[uid].chat.send_message(msg,safety_settings=safety_config)
-        try:
-            result = eval(response.text)
-            if result != "sucess":
-                replyTextMessage(event,result)
-        except Exception as e:
-            replyTextMessage(event,(response.text+"\n Error:\n" +str(e)))
+        # try:
+        result = eval(response.text)
+        if result != "sucess":
+            replyTextMessage(event,result)
+        # except Exception as e:
+        #     replyTextMessage(event,(response.text+"\n Error:\n" +str(e)))
 
 
 @handler.add(MessageEvent, message=StickerMessage)
