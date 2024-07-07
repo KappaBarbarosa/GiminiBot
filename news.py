@@ -117,7 +117,7 @@ def extract_full_text_from_API(articles,cur,range=10):
             
     return count, responses
 
-def NewsAPI(query,Textmodel,range=10,force_search=False):
+def NewsAPI(query,Textmodel,range=5,force_search=False):
     responses = GetInquiredNewsContent(query,range,force_search)
     chat = Textmodel.start_chat()
     for response in responses:

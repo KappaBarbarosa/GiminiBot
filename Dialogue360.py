@@ -25,7 +25,7 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 Users = {}
 Embeddings = {}
-Textmodel = genai.GenerativeModel('gemini-pro')
+Textmodel = genai.GenerativeModel('gemini-1.5-flash')
 ImageModel = genai.GenerativeModel('gemini-pro-vision')
 app = Flask(__name__)
 
