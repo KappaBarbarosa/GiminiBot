@@ -3,7 +3,6 @@ import json
 import re
 import requests
 from parameters import safety_config
-from Dialogue360 import Textmodel
 import os
 def google_search(query, num_results):
     conn = http.client.HTTPSConnection("google.serper.dev")
@@ -53,7 +52,7 @@ def summarize_content(content, query, chat):
     summary = chat.send_message(sample, safety_settings=safety_config).text
     return summary
 
-def SearchAPI(query, k=3, n=10):
+def SearchAPI(query,Textmodel, k=3, n=10):
     results = google_search(query, n)
     chat = Textmodel.start_chat()
     contents = []

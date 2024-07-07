@@ -4,7 +4,6 @@ import json
 import os
 import xml.etree.ElementTree as ET
 NEWS_API_KEY = 'c900b5c5bded495b8a00135c6dcf0267'
-from Dialogue360 import Textmodel
 from parameters import safety_config
 
 def GetHeadlinesSummaryByCountry(country,range=10):
@@ -118,7 +117,7 @@ def extract_full_text_from_API(articles,cur,range=10):
             
     return count, responses
 
-def NewsAPI(query,range=10,force_search=False):
+def NewsAPI(query,Textmodel,range=10,force_search=False):
     responses = GetInquiredNewsContent(query,range,force_search)
     chat = Textmodel.start_chat()
     for response in responses:
