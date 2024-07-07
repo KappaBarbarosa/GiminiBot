@@ -14,6 +14,7 @@ from parameters_v2 import *
 
 from news import NewsAPI
 from search import SearchAPI
+from Comment import CommentAPI
 import googlemaps
 import os
 import random
@@ -71,9 +72,14 @@ def Process(event,query,need_comment=True):
     varified_user(uid)
     news_result = NewsAPI(query,Textmodel)
     search_result = SearchAPI(query,Textmodel)
-    # if need_comment:
-    #     comment_result = CommentAPI(query)
-    prompt = f"這是有關{query}的新聞資訊{news_result}，以及市場監控情形{search_result}，請你做為一名分析這些資訊的市場趨勢分析師，提供一個完整中文分析，內容不要包含Process(event)。"
+    if need_comment:
+        comment_result = CommentAPI(query,Textmodel)
+        if comment_result == None:
+            prompt = f"這是有關{query}的新聞資訊{news_result}，以及市場監控情形{search_result}，但是目前沒有消費者評論，請你做為一名分析這些資訊的市場趨勢分析師(並將這些資訊當成是你蒐集的)，提供一個完整中文分析，內容不要包含Process(event)。"
+        else:
+            prompt = f"這是有關{query}的新聞資訊{news_result}，以及市場監控情形{search_result}，以及消費者評論{comment_result}，請你做為一名分析這些資訊的市場趨勢分析師(並將這些資訊當成是你蒐集的)，提供一個完整中文分析，內容不要包含Process(event)。"
+    else:
+        prompt = f"這是有關{query}的新聞資訊{news_result}，以及市場監控情形{search_result}，請你做為一名分析這些資訊的市場趨勢分析師(並將這些資訊當成是你蒐集的)，提供一個完整中文分析，內容不要包含Process(event)。"
     response =Users[uid].chat.send_message(prompt)
     pushTextMessage(event,response.text.replace("*",""))
     return "sucess"
