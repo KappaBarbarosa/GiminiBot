@@ -125,7 +125,7 @@ def NewsAPI(query,Textmodel,range=5,force_search=False):
         res = chat.send_message(sample,safety_settings=safety_config)
     sample = f"你是一個專業的市場趨勢分析師，現在請你根據這些新聞資訊，對{query}的最新趨勢進行完整分析。"
     res = chat.send_message(sample,safety_settings=safety_config).text
-    return res.text
+    return res
 
 if __name__ == '__main__':
     GetInquiredNewsContent('生成式AI',range=3,force_search=False)
