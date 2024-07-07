@@ -76,6 +76,7 @@ def Process(event,query,need_comment=True):
     prompt = f"這是有關{query}的新聞資訊{news_result}，以及市場監控情形{search_result}，請你根據這些資訊，幫助我更好地了解市場動態，做出明智的決策。"
     response =Users[uid].chat.send_message(prompt)
     pushTextMessage(event,response.text)
+    return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):

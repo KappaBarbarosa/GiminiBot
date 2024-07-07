@@ -71,7 +71,7 @@ def SearchAPI(query,Textmodel, k=3, n=10):
             break
     final_summary = chat.send_message(f"你是一個專業的市場趨勢分析師，現在請你根據這些資訊，對{query}這個問題進行完整答覆", safety_settings=safety_config).text
     
-    return "success", final_summary.replace("*", "")
+    return final_summary.replace("*", "")
 
 if __name__ == "__main__":
     contents = SearchAPI("Iphone15 評價", 3, 10)
