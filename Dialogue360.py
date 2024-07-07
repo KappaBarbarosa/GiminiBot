@@ -73,9 +73,9 @@ def Process(event,query,need_comment=True):
     search_result = SearchAPI(query,Textmodel)
     # if need_comment:
     #     comment_result = CommentAPI(query)
-    prompt = f"這是有關{query}的新聞資訊{news_result}，以及市場監控情形{search_result}，請你根據這些資訊，幫助我更好地了解市場動態，做出明智的決策。"
+    prompt = f"這是有關{query}的新聞資訊{news_result}，以及市場監控情形{search_result}，請你做為一名分析這些資訊的市場趨勢分析師，提供一個完整中文分析，內容不要包含Process(event)。"
     response =Users[uid].chat.send_message(prompt)
-    pushTextMessage(event,response.text)
+    pushTextMessage(event,response.text.replace("*",""))
     return "sucess"
 
 @handler.add(MessageEvent, message=TextMessage)
