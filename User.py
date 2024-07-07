@@ -1,5 +1,5 @@
 import os
-from parameters import history
+from parameters_v2 import history
 class User():
     def __init__(self, user_id,Textmodel):
         self.user_id = user_id

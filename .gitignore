@@ -2,3 +2,8 @@ a.ipynb
 a.txt
 top_headlines_tw.json
 生成式AI_response.json
+__pycache__/GiminiBot.cpython-311.pyc
+__pycache__/news.cpython-311.pyc
+__pycache__/parameters.cpython-311.pyc
+__pycache__/User.cpython-311.pyc
+__pycache__/weather.cpython-311.pyc

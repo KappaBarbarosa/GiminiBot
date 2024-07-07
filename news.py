@@ -4,6 +4,8 @@ import json
 import os
 import xml.etree.ElementTree as ET
 NEWS_API_KEY = 'c900b5c5bded495b8a00135c6dcf0267'
+from Dialogue360 import Textmodel
+from parameters import safety_config
 
 def GetHeadlinesSummaryByCountry(country,range=10):
 
@@ -115,6 +117,16 @@ def extract_full_text_from_API(articles,cur,range=10):
             count+=1
             
     return count, responses
-        
+
+def NewsAPI(query,range=10,force_search=False):
+    responses = GetInquiredNewsContent(query,range,force_search)
+    chat = Textmodel.start_chat()
+    for response in responses:
+        sample = f"這是從一個新聞網頁上擷取下來的html訊息,標題為{response['title']}，請你根據這些資訊:{response['content']}，對這份新聞做一個完整中文摘要，如果資訊和標題無關，只要回答 無相關三個字就好。"
+        res = chat.send_message(sample,safety_settings=safety_config)
+    sample = f"你是一個專業的市場趨勢分析師，現在請你根據這些新聞資訊，對{query}的最新趨勢進行完整分析。"
+    res = chat.send_message(sample,safety_settings=safety_config).text
+    return "sucess",res.text
+
 if __name__ == '__main__':
     GetInquiredNewsContent('生成式AI',range=3,force_search=False)

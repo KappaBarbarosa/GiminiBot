@@ -3,7 +3,7 @@ services:
   name: line-bot-python-cocobot
   env: python
   buildCommand: pip install -r requirements.txt
-  startCommand: python GiminiBot.py
+  startCommand: python Dialogue360.py
   plan: free
   autoDeploy: false
   envVars:

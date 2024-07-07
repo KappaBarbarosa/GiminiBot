@@ -6,3 +6,4 @@ googlemaps
 numpy
 beautifulsoup4
 requests
+googlesearch-python

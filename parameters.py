@@ -39,7 +39,7 @@ history=[{'role':'user',
         {'role':'user',
                 'parts':["我想了解一些關於生成式AI的新聞"]},
         {'role':'model',
-        'parts':["GetInquiredNewsContent(event=event,query = \"Will today be hot?\")"]},
+        'parts':["FindNews(event=event,query = \"生成式AI\")"]},
                 ]
 
 sticks = {
